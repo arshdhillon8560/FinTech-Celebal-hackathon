@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const api = axios.create({
-  baseURL: 'https://fin-tech-server.vercel.app/api',
+  baseURL: 'https://fin-tech-celebal-hackathon-bohl.vercel.app/api',
   headers: {
     'Content-Type': 'application/json',
   },
