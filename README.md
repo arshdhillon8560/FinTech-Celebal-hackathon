@@ -49,6 +49,21 @@ This project follows a **Full Stack MERN (MongoDB, Express, React, Node.js)** ar
 
 ---
 
+## UI/UX
+<img width="1273" height="922" alt="image" src="https://github.com/user-attachments/assets/13441eb8-721d-4d5d-8c3c-814785fb8232" />
+<img width="1243" height="904" alt="image" src="https://github.com/user-attachments/assets/b5b83a5b-af2b-4da3-8e19-b754b6ac1b6c" />
+<img width="1250" height="918" alt="image" src="https://github.com/user-attachments/assets/f0a790c7-8850-4d3e-bc3c-3c1dc349a11d" />
+<img width="1233" height="926" alt="image" src="https://github.com/user-attachments/assets/d0e2f64b-183e-42d0-89dd-b50b1c81e218" />
+<img width="1250" height="744" alt="image" src="https://github.com/user-attachments/assets/de232220-8614-4064-b883-dc3e0fe8e087" />
+<img width="1276" height="825" alt="image" src="https://github.com/user-attachments/assets/2b211553-e3f2-42cf-b389-50ae8081b258" />
+<img width="1249" height="923" alt="image" src="https://github.com/user-attachments/assets/e9296493-b9c0-4af3-b2ba-b9af5c9f0734" />
+
+
+
+
+
+
+
 ## ⚙️ Installation & Setup
 
 ### 🔧 Backend
@@ -72,42 +87,43 @@ npm install
 # Run server
 npm run dev
 
-Frontend
-cd expense-tracker
+### 🔧 Backend
+```bash
+-cd expense-tracker
 
 # Install dependencies
-npm install
+-npm install
 
 # Start development server
-npm run dev
+-npm run dev
 
-📧 Nodemailer (Email Service)
+##📧 Nodemailer (Email Service)
 
-Sends monthly expense reports to users.
+-Sends monthly expense reports to users.
 
-Can attach images/charts for better visualization.
+-Can attach images/charts for better visualization.
 
-Uses Gmail/SMTP or custom email service.
+-Uses Gmail/SMTP or custom email service.
 
-🤖 Gemini API (AI Insights)
+##🤖 Gemini API (AI Insights)
 
-Integrated with Google Gemini API.
+-Integrated with Google Gemini API.
 
-Provides personalized spending analysis.
+-Provides personalized spending analysis.
 
-Example: "You spent most on Food this month. Try reducing dine-out expenses."
+-Example: "You spent most on Food this month. Try reducing dine-out expenses."
 
-📌 Expected Benefits
+##📌 Expected Benefits
 
-Better financial awareness.
+-Better financial awareness.
 
-AI-powered suggestions for smarter savings.
+-AI-powered suggestions for smarter savings.
 
-Easy-to-read reports via email.
+-Easy-to-read reports via email.
 
-Secure and user-friendly interface.
+-Secure and user-friendly interface.
 
-📝 Author
+##📝 Author
 
-Arshdeep Singh
-CSI ID: CT_CSI_RJ_5475
+-Arshdeep Singh
+-CSI ID: CT_CSI_RJ_5475
