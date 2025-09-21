@@ -1,7 +1,13 @@
 # 💰 Finetech Expense Tracker (Full Stack Project)
 
 An advanced **Expense Tracker Application** built during the CSI Hackathon for the Full Stack role.  
-The project helps users efficiently **track expenses, transfers, and alerts**, while providing an intuitive dashboard, AI-powered insights, and automated reports.  
+The project helps users efficiently **track expenses, transfers, and alerts**, while providing an intuitive dashboard, AI-powered insights, and automated reports. 
+
+# If you are creating new account by signup there will be no charts and data . You have to make transactions in transaction page then you will get data charts at dashboard . 
+# Use my Demo Account if you want to test the website
+# Credentials *
+Email - arshdhillon8560@gmail.com
+Password - Avi@2025
 
 ---
 
