@@ -52,7 +52,7 @@ const Auth = () => {
             <div className="bg-blue-600 p-3 rounded-xl mr-3">
               <CreditCard className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900">SmartPay</h1>
+            <h1 className="text-3xl font-bold text-gray-900">FinTech</h1>
           </div>
           
           <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
