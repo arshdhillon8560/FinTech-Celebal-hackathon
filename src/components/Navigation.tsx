@@ -37,7 +37,7 @@ const Navigation = () => {
               <CreditCard className="h-6 w-6 text-white" />
             </div>
             <span className="text-xl font-extrabold bg-gradient-to-r from-indigo-400 to-pink-400 bg-clip-text text-transparent">
-              FineTech
+              FinTech
             </span>
           </div>
 
