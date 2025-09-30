@@ -5,7 +5,8 @@ import { useAuth } from '../contexts/AuthContext';
 
 const Transfers = () => {
   const { user, updateBalance } = useAuth();
-  type User = {
+
+  type UserType = {
     _id: string;
     name: string;
     email: string;
@@ -14,21 +15,21 @@ const Transfers = () => {
 
   type Transfer = {
     _id: string;
-    sender: User;
-    recipient: User;
+    sender: UserType | null;
+    recipient: UserType | null;
     amount: number;
-    description: string;
+    description?: string;
     createdAt: string;
     status: string;
     // add other transfer properties if needed
   };
 
   const [transfers, setTransfers] = useState<Transfer[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<UserType[]>([]);
   const [loading, setLoading] = useState(true);
   const [showSendModal, setShowSendModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<UserType[]>([]);
 
   const [formData, setFormData] = useState({
     recipientId: '',
@@ -41,9 +42,10 @@ const Transfers = () => {
   }, []);
 
   useEffect(() => {
-    const filtered = users.filter(u => 
-      u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      u.email.toLowerCase().includes(searchTerm.toLowerCase())
+    const filtered = users.filter(
+      (u) =>
+        u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        u.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredUsers(filtered);
   }, [users, searchTerm]);
@@ -52,13 +54,21 @@ const Transfers = () => {
     try {
       const [transfersRes, usersRes] = await Promise.all([
         transferAPI.getTransfers(),
-        transferAPI.getUsers()
+        transferAPI.getUsers(),
       ]);
-      
+
       setTransfers(transfersRes.data);
       const currentUserId = user?.id;
-      setUsers(usersRes.data.filter((u: User) => currentUserId ? u._id !== currentUserId : true));
-      setFilteredUsers(usersRes.data.filter((u: User) => currentUserId ? u._id !== currentUserId : true));
+      setUsers(
+        usersRes.data.filter((u: UserType) =>
+          currentUserId ? u._id !== currentUserId : true
+        )
+      );
+      setFilteredUsers(
+        usersRes.data.filter((u: UserType) =>
+          currentUserId ? u._id !== currentUserId : true
+        )
+      );
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -112,7 +122,7 @@ const Transfers = () => {
   };
 
   const getSelectedUser = () => {
-    return users.find(u => u._id === formData.recipientId);
+    return users.find((u) => u._id === formData.recipientId);
   };
 
   if (loading && transfers.length === 0) {
@@ -151,38 +161,60 @@ const Transfers = () => {
         <div className="p-6 border-b border-gray-200">
           <h3 className="text-xl font-semibold text-gray-900">Transfer History</h3>
         </div>
-        
+
         {transfers.length > 0 ? (
           <div className="divide-y divide-gray-200">
             {transfers.map((transfer) => (
               <div key={transfer._id} className="p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
-                    <div className={`p-3 rounded-lg ${
-                      transfer.sender._id === user?.id ? 'bg-red-100' : 'bg-green-100'
-                    }`}>
-                      <ArrowRightLeft className={`h-6 w-6 ${
-                        transfer.sender._id === user?.id ? 'text-red-600' : 'text-green-600'
-                      }`} />
+                    <div
+                      className={`p-3 rounded-lg ${
+                        transfer.sender?._id === user?.id
+                          ? 'bg-red-100'
+                          : 'bg-green-100'
+                      }`}
+                    >
+                      <ArrowRightLeft
+                        className={`h-6 w-6 ${
+                          transfer.sender?._id === user?.id
+                            ? 'text-red-600'
+                            : 'text-green-600'
+                        }`}
+                      />
                     </div>
                     <div>
                       <h4 className="text-lg font-semibold text-gray-900">
-                        {transfer.sender._id === user?.id ? 'Sent to' : 'Received from'}{' '}
-                        {transfer.sender._id === user?.id ? transfer.recipient.name : transfer.sender.name}
+                        {transfer.sender?._id === user?.id
+                          ? 'Sent to'
+                          : 'Received from'}{' '}
+                        {transfer.sender?._id === user?.id
+                          ? transfer.recipient?.name || 'Unknown User'
+                          : transfer.sender?.name || 'Unknown User'}
                       </h4>
                       <p className="text-sm text-gray-500">
-                        {transfer.description} • {new Date(transfer.createdAt).toLocaleDateString()}
+                        {transfer.description || 'No description'} •{' '}
+                        {transfer.createdAt
+                          ? new Date(transfer.createdAt).toLocaleDateString()
+                          : ''}
                       </p>
                     </div>
                   </div>
-                  
+
                   <div className="text-right">
-                    <span className={`text-xl font-bold ${
-                      transfer.sender._id === user?.id ? 'text-red-600' : 'text-green-600'
-                    }`}>
-                      {transfer.sender._id === user?.id ? '-' : '+'}${transfer.amount.toFixed(2)}
+                    <span
+                      className={`text-xl font-bold ${
+                        transfer.sender?._id === user?.id
+                          ? 'text-red-600'
+                          : 'text-green-600'
+                      }`}
+                    >
+                      {transfer.sender?._id === user?.id ? '-' : '+'}$
+                      {transfer.amount?.toFixed(2)}
                     </span>
-                    <p className="text-sm text-gray-500 capitalize">{transfer.status}</p>
+                    <p className="text-sm text-gray-500 capitalize">
+                      {transfer.status}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -193,7 +225,9 @@ const Transfers = () => {
             <div className="bg-gray-100 p-4 rounded-full inline-block mb-4">
               <ArrowRightLeft className="h-8 w-8 text-gray-400" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No transfers yet</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              No transfers yet
+            </h3>
             <p className="text-gray-500">Start sending money to other users</p>
           </div>
         )}
@@ -204,7 +238,7 @@ const Transfers = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-8 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Send Money</h2>
-            
+
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -217,13 +251,19 @@ const Transfers = () => {
                         <User className="h-4 w-4 text-blue-600" />
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900">{getSelectedUser()?.name}</p>
-                        <p className="text-sm text-gray-500">{getSelectedUser()?.email}</p>
+                        <p className="font-medium text-gray-900">
+                          {getSelectedUser()?.name}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {getSelectedUser()?.email}
+                        </p>
                       </div>
                     </div>
                     <button
                       type="button"
-                      onClick={() => setFormData({...formData, recipientId: ''})}
+                      onClick={() =>
+                        setFormData({ ...formData, recipientId: '' })
+                      }
                       className="text-blue-600 hover:text-blue-700 text-sm font-medium"
                     >
                       Change
@@ -259,7 +299,9 @@ const Transfers = () => {
                         </button>
                       ))}
                       {filteredUsers.length === 0 && (
-                        <p className="text-gray-500 text-center py-2 text-sm">No users found</p>
+                        <p className="text-gray-500 text-center py-2 text-sm">
+                          No users found
+                        </p>
                       )}
                     </div>
                   </div>
