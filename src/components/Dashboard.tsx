@@ -73,13 +73,11 @@ const Dashboard = () => {
       setAlerts(alertsRes.data.filter((alert: Alert) => !alert.isRead).slice(0, 3));
 
       // ======= GEMINI AI ANALYSIS =======
-      const summaryText = transactionsRes.data
-        .map((t: Transaction) => `${t.type} of $${t.amount} for ${t.category}`)
-        .join('; ');
+      const groqRes = await groqAPI.analyzeExpenses(
+        transactionsRes.data
+      );
 
-      const groqRes = await groqAPI.analyzeExpenses(summaryText);
       setGeminiAnalysis(groqRes.data);
-
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     } finally {
@@ -153,31 +151,39 @@ const Dashboard = () => {
 
       {/* Gemini AI Analysis */}
       {/* AI Financial Analysis */}
+      {/* AI Financial Analysis */}
       {geminiAnalysis && (
         <div className="mb-8 bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
 
           {/* Header */}
-          <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-600 to-indigo-600">
+          <div className="px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600">
             <h3 className="text-xl font-bold text-white">
               AI Financial Analysis
             </h3>
+
             <p className="text-blue-100 text-sm mt-1">
-              Smart insights based on your recent spending behavior
+              Smart insights based on your real spending behavior
             </p>
           </div>
 
           {/* Analysis Content */}
           <div className="p-6 space-y-4">
+
             {geminiAnalysis
-              .split("•")
+              .split(/•/g)
               .filter((item) => item.trim())
               .map((item, index) => (
                 <div
                   key={index}
-                  className="p-4 rounded-xl bg-gray-50 border border-gray-100 hover:shadow-sm transition"
+                  className="flex items-start gap-4 p-4 rounded-xl bg-gray-50 border border-gray-100 hover:shadow-sm transition"
                 >
-                  <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-                    • {item.trim()}
+
+                  {/* Bullet */}
+                  <div className="mt-2 min-w-[10px] h-[10px] rounded-full bg-blue-600"></div>
+
+                  {/* Text */}
+                  <p className="text-gray-700 leading-relaxed text-sm sm:text-base flex-1">
+                    {item.trim()}
                   </p>
                 </div>
               ))}

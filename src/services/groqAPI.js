@@ -1,115 +1,125 @@
 import Groq from "groq-sdk";
 
-// Initialize Groq client
 const groq = new Groq({
   apiKey: import.meta.env.VITE_GROQ_API_KEY,
   dangerouslyAllowBrowser: true,
 });
 
 const generateGroqText = async (prompt) => {
-  try {
-    const chatCompletion = await groq.chat.completions.create({
-      messages: [
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-      model: "llama-3.3-70b-versatile",
-      temperature: 0.4,
-      max_tokens: 500,
-    });
+  const chatCompletion = await groq.chat.completions.create({
+    messages: [
+      {
+        role: "user",
+        content: prompt,
+      },
+    ],
+    model: "llama-3.3-70b-versatile",
+    temperature: 0.2,
+    max_tokens: 350,
+  });
 
-    return chatCompletion.choices[0]?.message?.content || "";
-  } catch (error) {
-    console.error("Groq API Error:", error);
-    throw error;
-  }
+  return chatCompletion.choices[0]?.message?.content || "";
 };
 
 const groqAPI = {
-  analyzeExpenses: async (summaryText) => {
-    console.log("Sending to Groq:", summaryText);
-
+  analyzeExpenses: async (transactions) => {
     try {
-      const prompt = `
-You are a professional fintech AI financial assistant.
-
-Analyze the user's expenses and provide:
-
-1. Spending Pattern
-2. Biggest Concern
-3. Positive Insight
-4. Savings Recommendation
-5. Financial Health Score (out of 10)
-
-Rules:
-- Use concise professional language
-- Use bullet points only
-- Maximum 5 bullets
-- No introductions
-- No long paragraphs
-- No repeating raw data
-- Focus on analytical insights
-- Keep output clean and dashboard-friendly
-
-Example:
-
-• Spending Pattern: Most spending is concentrated in healthcare and utilities.
-
-• Biggest Concern: Healthcare costs are significantly higher than discretionary spending.
-
-• Positive Insight: Shopping expenses remain controlled.
-
-• Savings Recommendation: Reduce recurring utility usage and review healthcare subscriptions.
-
-• Financial Health Score: 7.5/10
-`;
-
-      const result = await generateGroqText(
-        `${prompt}\n\nExpense Data:\n${summaryText}`
+      // ================= FILTER EXPENSES =================
+      const expenses = transactions.filter(
+        (t) => t.type === "expense"
       );
 
-      console.log("Groq result:", result);
-
-      // Clean formatting
-      let simplified = result
-        .replace(/\*\*/g, "")
-        .replace(/^\s*-\s*/gm, "• ")
-        .replace(/\n{2,}/g, "\n")
-        .trim();
-
-      // Fallback response
-      if (!simplified || simplified.length < 10) {
-        simplified = `
-• Spending Pattern: Your spending is balanced across major categories.
-
-• Biggest Concern: Some recurring expenses may need optimization.
-
-• Positive Insight: Essential spending remains under control.
-
-• Savings Recommendation: Monitor shopping and utility expenses closely.
-
-• Financial Health Score: 7/10
-        `.trim();
+      if (expenses.length === 0) {
+        return {
+          data: "• No expense data available yet.",
+        };
       }
 
-      return { data: simplified };
-    } catch (err) {
-      console.error("Groq API error:", err);
+      // ================= TOTAL SPENDING =================
+      const totalSpent = expenses.reduce(
+        (sum, t) => sum + Number(t.amount),
+        0
+      );
+
+      // ================= CATEGORY TOTALS =================
+      const categoryTotals = {};
+
+      expenses.forEach((t) => {
+        const category = t.category || "other";
+
+        categoryTotals[category] =
+          (categoryTotals[category] || 0) +
+          Number(t.amount);
+      });
+
+      // ================= SORT CATEGORIES =================
+      const sortedCategories = Object.entries(categoryTotals)
+        .sort((a, b) => b[1] - a[1]);
+
+      const topCategory = sortedCategories[0]?.[0];
+      const topAmount = sortedCategories[0]?.[1];
+
+      // ================= BUILD PROMPT =================
+      const prompt = `
+You are a professional fintech AI assistant.
+
+Analyze ONLY the user's actual financial data below.
+
+User Data:
+- Total Spending: $${totalSpent.toFixed(2)}
+- Top Category: ${topCategory} ($${topAmount.toFixed(2)})
+
+Category Breakdown:
+${sortedCategories
+  .map(
+    ([cat, amt]) =>
+      `${cat}: $${Number(amt).toFixed(2)}`
+  )
+  .join("\n")}
+
+Instructions:
+- Use concise fintech-style insights
+- Mention ONLY actual categories from data
+- NO generic advice
+- NO fake assumptions
+- Keep response analytical
+- Maximum 5 points
+- Use clean bullet points
+- NO markdown stars (*)
+- NO headings
+- Each point should be short and readable
+`;
+
+      // ================= GROQ RESPONSE =================
+      const result = await generateGroqText(prompt);
+
+      // ================= CLEAN OUTPUT =================
+      let cleaned = result
+        .replace(/\*\*/g, "")
+        .replace(/^\s*[\*\-]\s*/gm, "• ")
+        .replace(/\n\s*\n/g, "\n")
+        .replace(/•\s+/g, "• ")
+        .trim();
+
+      // Ensure bullets exist
+      if (!cleaned.includes("•")) {
+        cleaned = cleaned
+          .split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .map((line) => `• ${line}`)
+          .join("\n");
+      }
 
       return {
-        data: `
-• Spending Pattern: Your expenses appear manageable overall.
+        data: cleaned,
+      };
+    } catch (error) {
+      console.error("Groq API Error:", error);
 
-• Biggest Concern: Some categories may require better tracking.
-
-• Positive Insight: Spending habits remain relatively stable.
-
-• Savings Recommendation: Focus on reducing unnecessary recurring costs.
-
-• Financial Health Score: 6.8/10
-        `.trim(),
+      return {
+        data:
+          "• Unable to generate financial insights right now.",
       };
     }
   },
