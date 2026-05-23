@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Search, Filter, Edit2, Trash2, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Plus, Search, Edit2, Trash2, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { transactionAPI } from '../services/api.js';
 
 const categories = ['food', 'transport', 'shopping', 'entertainment', 'utilities', 'healthcare', 'other'];

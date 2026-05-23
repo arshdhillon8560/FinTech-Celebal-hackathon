@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Chart as ChartJS,
   ArcElement,
@@ -19,7 +19,7 @@ import {
   ArrowDownRight
 } from 'lucide-react';
 import { transactionAPI, alertAPI } from '../services/api.js';
-import { geminiAPI } from '../services/geminiAPI.js';
+import { groqAPI } from '../services/groqAPI.js';
 import { useAuth } from '../contexts/AuthContext';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
@@ -70,15 +70,15 @@ const Dashboard = () => {
 
       setStats(statsRes.data);
       setRecentTransactions(transactionsRes.data.slice(0, 5));
-      setAlerts(alertsRes.data.filter((alert: any) => !alert.isRead).slice(0, 3));
+      setAlerts(alertsRes.data.filter((alert: Alert) => !alert.isRead).slice(0, 3));
 
       // ======= GEMINI AI ANALYSIS =======
       const summaryText = transactionsRes.data
-        .map(t => `${t.type} of $${t.amount} for ${t.category}`)
+        .map((t: Transaction) => `${t.type} of $${t.amount} for ${t.category}`)
         .join('; ');
 
-      const geminiRes = await geminiAPI.analyzeExpenses(summaryText);
-      setGeminiAnalysis(geminiRes.data);
+      const groqRes = await groqAPI.analyzeExpenses(summaryText);
+setGeminiAnalysis(groqRes.data);
 
     } catch (error) {
       console.error('Error fetching dashboard data:', error);

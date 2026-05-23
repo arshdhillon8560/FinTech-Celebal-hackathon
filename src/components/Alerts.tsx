@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { AlertTriangle, Settings, Check, Bell } from 'lucide-react';
 import { alertAPI } from '../services/api.js';
 
