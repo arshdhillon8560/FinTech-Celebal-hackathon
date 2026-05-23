@@ -169,18 +169,16 @@ const Transfers = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
                     <div
-                      className={`p-3 rounded-lg ${
-                        transfer.sender?._id === user?.id
+                      className={`p-3 rounded-lg ${transfer.sender?._id === user?.id
                           ? 'bg-red-100'
                           : 'bg-green-100'
-                      }`}
+                        }`}
                     >
                       <ArrowRightLeft
-                        className={`h-6 w-6 ${
-                          transfer.sender?._id === user?.id
+                        className={`h-6 w-6 ${transfer.sender?._id === user?.id
                             ? 'text-red-600'
                             : 'text-green-600'
-                        }`}
+                          }`}
                       />
                     </div>
                     <div>
@@ -203,11 +201,10 @@ const Transfers = () => {
 
                   <div className="text-right">
                     <span
-                      className={`text-xl font-bold ${
-                        transfer.sender?._id === user?.id
+                      className={`text-xl font-bold ${transfer.sender?._id === user?.id
                           ? 'text-red-600'
                           : 'text-green-600'
-                      }`}
+                        }`}
                     >
                       {transfer.sender?._id === user?.id ? '-' : '+'}$
                       {transfer.amount?.toFixed(2)}

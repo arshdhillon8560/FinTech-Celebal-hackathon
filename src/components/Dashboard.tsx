@@ -78,7 +78,7 @@ const Dashboard = () => {
         .join('; ');
 
       const groqRes = await groqAPI.analyzeExpenses(summaryText);
-setGeminiAnalysis(groqRes.data);
+      setGeminiAnalysis(groqRes.data);
 
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
@@ -142,7 +142,7 @@ setGeminiAnalysis(groqRes.data);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      
+
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">
@@ -152,10 +152,36 @@ setGeminiAnalysis(groqRes.data);
       </div>
 
       {/* Gemini AI Analysis */}
+      {/* AI Financial Analysis */}
       {geminiAnalysis && (
-        <div className="mb-8 p-6 bg-white rounded-2xl shadow-md border border-gray-100">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">AI Analysis of Expenses</h3>
-          <p className="text-gray-700">{geminiAnalysis}</p>
+        <div className="mb-8 bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
+
+          {/* Header */}
+          <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-600 to-indigo-600">
+            <h3 className="text-xl font-bold text-white">
+              AI Financial Analysis
+            </h3>
+            <p className="text-blue-100 text-sm mt-1">
+              Smart insights based on your recent spending behavior
+            </p>
+          </div>
+
+          {/* Analysis Content */}
+          <div className="p-6 space-y-4">
+            {geminiAnalysis
+              .split("•")
+              .filter((item) => item.trim())
+              .map((item, index) => (
+                <div
+                  key={index}
+                  className="p-4 rounded-xl bg-gray-50 border border-gray-100 hover:shadow-sm transition"
+                >
+                  <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
+                    • {item.trim()}
+                  </p>
+                </div>
+              ))}
+          </div>
         </div>
       )}
 

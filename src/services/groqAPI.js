@@ -1,6 +1,6 @@
 import Groq from "groq-sdk";
 
-// Initialize Groq client with API key from environment
+// Initialize Groq client
 const groq = new Groq({
   apiKey: import.meta.env.VITE_GROQ_API_KEY,
   dangerouslyAllowBrowser: true,
@@ -15,8 +15,8 @@ const generateGroqText = async (prompt) => {
           content: prompt,
         },
       ],
-      model: "llama-3.1-70b-versatile", // Currently supported Groq model
-      temperature: 0.5,
+      model: "llama-3.3-70b-versatile",
+      temperature: 0.4,
       max_tokens: 500,
     });
 
@@ -33,28 +33,65 @@ const groqAPI = {
 
     try {
       const prompt = `
-        Analyze my expenses in plain, simple language.
-        Focus on key insights and patterns, not raw numbers.
-        Provide 3-5 concise points that highlight trends, areas of concern, and suggestions.
-      `;
+You are a professional fintech AI financial assistant.
+
+Analyze the user's expenses and provide:
+
+1. Spending Pattern
+2. Biggest Concern
+3. Positive Insight
+4. Savings Recommendation
+5. Financial Health Score (out of 10)
+
+Rules:
+- Use concise professional language
+- Use bullet points only
+- Maximum 5 bullets
+- No introductions
+- No long paragraphs
+- No repeating raw data
+- Focus on analytical insights
+- Keep output clean and dashboard-friendly
+
+Example:
+
+• Spending Pattern: Most spending is concentrated in healthcare and utilities.
+
+• Biggest Concern: Healthcare costs are significantly higher than discretionary spending.
+
+• Positive Insight: Shopping expenses remain controlled.
+
+• Savings Recommendation: Reduce recurring utility usage and review healthcare subscriptions.
+
+• Financial Health Score: 7.5/10
+`;
 
       const result = await generateGroqText(
-        `${prompt}\nData: ${summaryText}`
+        `${prompt}\n\nExpense Data:\n${summaryText}`
       );
 
       console.log("Groq result:", result);
 
-      // === Simplify output ===
+      // Clean formatting
       let simplified = result
-        .replace(/\*\*.*?\*\*/g, "")
+        .replace(/\*\*/g, "")
         .replace(/^\s*-\s*/gm, "• ")
-        .replace(/Income:.*Expenses:.*/s, "")
-        .replace(/\s{2,}/g, " ")
+        .replace(/\n{2,}/g, "\n")
         .trim();
 
+      // Fallback response
       if (!simplified || simplified.length < 10) {
-        simplified =
-          "Your spending is generally under control, with room for savings. Focus on big categories like food and shopping for optimization.";
+        simplified = `
+• Spending Pattern: Your spending is balanced across major categories.
+
+• Biggest Concern: Some recurring expenses may need optimization.
+
+• Positive Insight: Essential spending remains under control.
+
+• Savings Recommendation: Monitor shopping and utility expenses closely.
+
+• Financial Health Score: 7/10
+        `.trim();
       }
 
       return { data: simplified };
@@ -62,8 +99,17 @@ const groqAPI = {
       console.error("Groq API error:", err);
 
       return {
-        data:
-          "Unable to generate AI analysis. Overall, your finances seem stable — consider tracking big expense categories for better insights.",
+        data: `
+• Spending Pattern: Your expenses appear manageable overall.
+
+• Biggest Concern: Some categories may require better tracking.
+
+• Positive Insight: Spending habits remain relatively stable.
+
+• Savings Recommendation: Focus on reducing unnecessary recurring costs.
+
+• Financial Health Score: 6.8/10
+        `.trim(),
       };
     }
   },

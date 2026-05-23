@@ -53,7 +53,7 @@ const Transactions = () => {
     let filtered = transactions;
 
     if (searchTerm) {
-      filtered = filtered.filter(t => 
+      filtered = filtered.filter(t =>
         t.description.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
@@ -79,7 +79,7 @@ const Transactions = () => {
       } else {
         await transactionAPI.addTransaction(formData);
       }
-      
+
       await fetchTransactions();
       resetForm();
       setShowAddModal(false);
@@ -201,9 +201,8 @@ const Transactions = () => {
               <div key={transaction._id} className="p-6 transaction-item">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
-                    <div className={`p-3 rounded-lg ${
-                      transaction.type === 'expense' ? 'bg-red-100' : 'bg-green-100'
-                    }`}>
+                    <div className={`p-3 rounded-lg ${transaction.type === 'expense' ? 'bg-red-100' : 'bg-green-100'
+                      }`}>
                       {transaction.type === 'expense' ? (
                         <ArrowUpRight className="h-6 w-6 text-red-600" />
                       ) : (
@@ -219,14 +218,13 @@ const Transactions = () => {
                       </p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-4">
-                    <span className={`text-xl font-bold ${
-                      transaction.type === 'expense' ? 'text-red-600' : 'text-green-600'
-                    }`}>
+                    <span className={`text-xl font-bold ${transaction.type === 'expense' ? 'text-red-600' : 'text-green-600'
+                      }`}>
                       {transaction.type === 'expense' ? '-' : '+'}${transaction.amount.toFixed(2)}
                     </span>
-                    
+
                     <div className="flex space-x-2">
                       <button
                         onClick={() => handleEdit(transaction)}
@@ -264,7 +262,7 @@ const Transactions = () => {
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
               {editingTransaction ? 'Edit Transaction' : 'Add Transaction'}
             </h2>
-            
+
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
